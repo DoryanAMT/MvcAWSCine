@@ -1,0 +1,100 @@
+﻿@model List<Pelicula>
+
+@{
+    ViewData["Title"] = "Películas";
+}
+
+<link rel="stylesheet" href="~/css/peliculas/indexStyle.css" asp-append-version="true" />
+
+<div class="peliculas-header">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4"><i class="fas fa-film me-3"></i>Películas</h1>
+        <div class="search-container">
+            <input type="text" id="peliculaSearch" class="form-control" placeholder="Buscar película...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+    </div>
+    <div class="category-filters mb-4">
+        <button class="btn btn-outline-dark active" data-filter="all">Todas</button>
+        <button class="btn btn-outline-dark" data-filter="recent">Estrenos</button>
+        <button class="btn btn-outline-dark" data-filter="popular">Populares</button>
+    </div>
+</div>
+
+<div class="row" id="peliculasList">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var pelicula in Model)
+        {
+            <div class="col-md-6 col-lg-4 col-xl-3 mb-4 pelicula-item">
+                <div class="movie-card h-100">
+                    <div class="poster-container">
+                        <img src="@(string.IsNullOrEmpty(pelicula.ImgPoster) ? "/images/default-poster.jpg" : pelicula.ImgPoster)"
+                             class="card-img-top" alt="@pelicula.Titulo">
+                        <div class="overlay">
+                            <div class="overlay-content">
+                                <a href="javascript:void(0)" class="btn btn-light btn-sm trailer-btn" data-id="@pelicula.IdPelicula">
+                                    <i class="fas fa-play me-2"></i>Ver trailer
+                                </a>
+                                <a asp-action="Details"
+                                   asp-route-idPelicula="@pelicula.IdPelicula"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@pelicula.Titulo</h5>
+                        <div class="movie-info">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>@pelicula.FechaLanzamiento</span>
+                        </div>
+                        <div class="movie-info">
+                            <i class="fas fa-clock"></i>
+                            <span>@pelicula.DuracionMinutos min</span>
+                        </div>
+                        <p class="card-text sinopsis-preview">@(pelicula.Sinopsis?.Length > 100 ? pelicula.Sinopsis.Substring(0, 100) + "..." : pelicula.Sinopsis)</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a asp-controller="HorarioPeliculas" asp-action="PeliculaHorarios" asp-route-id="@pelicula.IdPelicula" class="btn btn-danger w-100">
+                            <i class="fas fa-ticket-alt me-2"></i>Comprar boletos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No hay películas disponibles en este momento.
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal para trailer -->
+<div class="modal fade" id="trailerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="trailerModalLabel">Trailer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <div id="trailerContainer">
+                        <!-- El trailer se cargará aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/peliculas/indexScript.js" asp-append-version="true"></script>
+}

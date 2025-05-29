@@ -1,0 +1,123 @@
+﻿@model Usuario
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg mt-4">
+                <div class="card-header bg-dark text-white text-center py-4">
+                    <h3 class="font-weight-bold mb-0">
+                        <i class="fas fa-film me-2"></i>BeeyondScreen
+                    </h3>
+                    <p class="text-light mt-2">Crea tu cuenta</p>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label" for="nombre">
+                                <i class="fas fa-user me-2"></i>Nombre completo
+                            </label>
+                            <input type="text" id="nombre" name="nombre" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="email">
+                                <i class="fas fa-envelope me-2"></i>Email
+                            </label>
+                            <input type="email" id="email" name="email" class="form-control" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="imagen">
+                                <i class="fas fa-image me-2"></i>Imagen de perfil
+                            </label>
+                            <div class="input-group">
+                                @* <input type="text" class="form-control" id="imagenFile" accept="image/*" onchange="mostrarNombreArchivo()" /> *@
+                                <input type="text" id="imagen" name="imagen" class="form-control" />
+                            </div>
+                            <div class="text-center mt-3" id="previewContainer" style="display: none;">
+                                <img id="imagenPreview" class="img-fluid rounded-circle" style="max-height: 150px; max-width: 150px;" />
+                            </div>
+                            <small class="text-muted">Puedes subir una imagen o proporcionar una URL</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="password">
+                                <i class="fas fa-lock me-2"></i>Contraseña
+                            </label>
+                            <input type="password" id="password" name="password" class="form-control" required />
+                            <small class="text-muted">Tu contraseña debe tener al menos 8 caracteres</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="confirmarPassword">
+                                <i class="fas fa-check-circle me-2"></i>Confirmar contraseña
+                            </label>
+                            <input type="password" id="confirmarPassword" class="form-control" required />
+                        </div>
+
+                        <div class="mb-4 form-check">
+                            <input type="checkbox" class="form-check-input" id="terminos" required />
+                            <label class="form-check-label" for="terminos">
+                                Acepto los <a href="#" class="text-danger">términos y condiciones</a>
+                            </label>
+                        </div>
+
+                        @if (ViewData["MENSAJE"] != null)
+                        {
+                            <div class="alert alert-danger mb-4 fade-in" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>@ViewData["MENSAJE"]
+                            </div>
+                        }
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Crear cuenta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <div class="small">
+                        ¿Ya tienes una cuenta? <a href="#" class="text-danger">Inicia sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validación de formulario
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const password = document.getElementById('password');
+        const confirmarPassword = document.getElementById('confirmarPassword');
+
+        form.addEventListener('submit', function(event) {
+            if (password.value !== confirmarPassword.value) {
+                event.preventDefault();
+                alert('Las contraseñas no coinciden');
+            }
+        });
+    });
+
+    // Previsualización de la imagen
+    function mostrarNombreArchivo() {
+        const fileInput = document.getElementById('imagenFile');
+        const imagen = document.getElementById('imagen');
+        const preview = document.getElementById('imagenPreview');
+        const previewContainer = document.getElementById('previewContainer');
+
+        if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                imagen.value = fileInput.value.split('\\').pop(); // Guardar solo el nombre del archivo
+                previewContainer.style.display = 'block';
+            }
+
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    }
+</script>

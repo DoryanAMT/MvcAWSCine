@@ -1,0 +1,128 @@
+﻿<style>
+    /* Estilos para el menú de usuario */
+    .user-menu .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    /* Eliminar la flecha del dropdown */
+    .dropdown-toggle.no-caret::after {
+        display: none !important;
+    }
+
+    .user-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .default-avatar {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--primary);
+        font-weight: 600;
+    }
+
+    .dropdown-menu {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border-radius: 0.5rem;
+    }
+
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+        .dropdown-item:hover {
+            background-color: rgba(229, 9, 20, 0.05);
+        }
+
+        .dropdown-item i {
+            color: var(--primary);
+            width: 16px;
+            text-align: center;
+        }
+
+        .dropdown-item.text-danger i {
+            color: var(--primary);
+        }
+
+    .dropdown-divider {
+        margin: 0.25rem 0;
+    }
+
+    /* Responsive para menú de usuario */
+    media (max-width: 767.98px) {
+        .user-menu .dropdown-menu
+
+    {
+        width: 100%;
+    }
+
+    }</style>
+
+@if (Context.User.Identity.IsAuthenticated == false)
+{
+    <div class="d-flex">
+        <a class="btn btn-outline-light me-2" asp-area="" asp-controller="Usuarios" asp-action="Perfil">
+            <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
+        </a>
+        <a class="btn btn-danger" asp-area="" asp-controller="Usuarios" asp-action="Register">
+            <i class="fas fa-user-plus me-1"></i>Registrarse
+        </a>
+    </div>
+}
+else
+{
+    <div class="dropdown user-menu">
+        <a class="nav-link dropdown-toggle no-caret" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="d-flex align-items-center">
+                <div class="user-avatar me-2">
+                    @if (!string.IsNullOrEmpty(Context.User.FindFirst("Imagen").Value))
+                    {
+                        <img src="@Context.User.FindFirst("Imagen").Value" alt="@Context.User.Identity.Name" class="rounded-circle" width="32" height="32">
+                    }
+                    else
+                    {
+                        <div class="default-avatar rounded-circle bg-primary text-white">
+                            <span>@(@Context.User.Identity.Name.Substring(0, 1).ToUpper())</span>
+                        </div>
+                    }
+                </div>
+                <span class="d-none d-md-inline text-light">@Context.User.Identity.Name</span>
+            </div>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li>
+                <a class="dropdown-item" asp-controller="Usuarios" asp-action="Perfil">
+                    <i class="fas fa-user me-2"></i>Mi Perfil
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item"
+                   asp-controller="Usuarios"
+                   asp-action="BoletosUser">
+                    <i class="fas fa-ticket-alt me-2"></i>Mis Boletos
+                </a>
+            </li>
+            @* <li>
+                <a class="dropdown-item" asp-controller="Favoritos" asp-action="Index">
+                    <i class="fas fa-heart me-2"></i>Favoritos
+                </a>
+            </li> *@
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item text-danger" asp-controller="Managed" asp-action="Logout">
+                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                </a>
+            </li>
+        </ul>
+    </div>
+}

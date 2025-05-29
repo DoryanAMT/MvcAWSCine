@@ -1,0 +1,381 @@
+﻿@model ModelAsientosReserva
+
+@{
+    ViewData["Title"] = "Selección de Asientos";
+}
+
+<div class="container mt-4 fade-in">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Selección de Asientos</h2>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="@Model.Pelicula.ImgPoster" class="img-fluid rounded" alt="@Model.Pelicula.Titulo">
+                        </div>
+                        <div class="col-md-8">
+                            <h3>@Model.Pelicula.Titulo</h3>
+                            <p class="movie-info">
+                                <i class="fas fa-clock"></i> @Model.Pelicula.DuracionMinutos min
+                            </p>
+                            <p class="movie-info">
+                                <i class="fas fa-calendar"></i> @Model.HorarioPelicula.HoraFuncion.ToString("dd/MM/yyyy HH:mm")
+                            </p>
+                            <p class="movie-info">
+                                <i class="fas fa-ticket-alt"></i> Sala @Model.HorarioPelicula.IdSala
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Tu Selección</h5>
+                </div>
+                <div class="card-body">
+                    <div id="selected-seats-summary">
+                        <p>No has seleccionado asientos</p>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Total:</span>
+                        <span id="total-price" class="font-weight-bold">$0.00</span>
+                    </div>
+                    <button id="btn-continue" class="btn btn-danger w-100 mt-3" disabled>
+                        Confirmar Reserva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="seat-legend mb-4">
+                        <div class="d-flex justify-content-center">
+                            <div class="me-4">
+                                <div class="seat available d-inline-block"></div>
+                                <span class="ms-2">Disponible</span>
+                            </div>
+                            <div class="me-4">
+                                <div class="seat selected d-inline-block"></div>
+                                <span class="ms-2">Seleccionado</span>
+                            </div>
+                            <div>
+                                <div class="seat unavailable d-inline-block"></div>
+                                <span class="ms-2">No disponible</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="screen-container mb-4">
+                        <div class="screen">PANTALLA</div>
+                    </div>
+
+                    <div class="seat-map-container">
+                        <div class="seat-map">
+                            @{
+                                var filas = new char[] { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L' };
+                                var asientosPorFila = 12;
+                            }
+
+                            @foreach (var fila in filas)
+                            {
+                                <div class="seat-row">
+                                    <div class="row-label">@fila</div>
+                                    @for (int i = 1; i <= asientosPorFila; i++)
+                                    {
+                                        var numero = i.ToString();
+                                        var idAsiento = $"{fila}{numero}";
+
+                                        // Buscar si este asiento está en la lista de asientos reservados
+                                        var asientoReservado = Model.Asientos.Any(a => a.Fila == fila.ToString() && a.Numero == numero);
+                                        var disponible = !asientoReservado;
+                                        var asientoClass = disponible ? "available" : "unavailable";
+
+                                        <div class="seat @asientoClass"
+                                             data-fila="@fila"
+                                             data-numero="@numero"
+                                             data-sala="@Model.HorarioPelicula.IdSala"
+                                             data-horario="@Model.HorarioPelicula.IdHorario"
+                                             data-disponible="@disponible.ToString().ToLower()">
+                                            <span class="seat-label">@idAsiento</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario oculto para enviar los datos al controlador -->
+    <form id="reserva-form" method="post" action="@Url.Action("AsientosReserva")" style="display:none;">
+        <input type="hidden" id="IdAsiento" name="IdAsiento" value="0" />
+        <input type="hidden" id="IdSala" name="IdSala" value="@Model.HorarioPelicula.IdSala" />
+        <input type="hidden" id="IdHorario" name="IdHorario" value="@Model.HorarioPelicula.IdHorario" />
+        <input type="hidden" id="Numero" name="Numero" value="" />
+        <input type="hidden" id="Fila" name="Fila" value="" />
+        <input type="hidden" id="Disponible" name="Disponible" value="false" />
+    </form>
+</div>
+
+<style>
+    /* Estilos específicos para la selección de asientos */
+    .screen-container {
+        text-align: center;
+        perspective: 500px;
+        margin-bottom: 30px;
+    }
+
+    .screen {
+        height: 70px;
+        background-color: white;
+        width: 80%;
+        margin: 0 auto;
+        transform: rotateX(-30deg);
+        box-shadow: 0 3px 10px rgba(255, 255, 255, 0.7);
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        letter-spacing: 2px;
+        border-radius: 5px;
+    }
+
+    .seat-map-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .seat-map {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .row-label {
+        width: 30px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .seat {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px 8px 0 0;
+        margin: 3px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+        .seat.available {
+            background-color: #444451;
+        }
+
+        .seat.selected {
+            background-color: var(--primary);
+        }
+
+        .seat.unavailable {
+            background-color: #242333;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .seat:hover:not(.unavailable) {
+            transform: scale(1.1);
+        }
+
+        .seat .seat-label {
+            position: absolute;
+            color: white;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+    .seat-legend .seat {
+        width: 25px;
+        height: 25px;
+        margin-bottom: -5px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const seats = document.querySelectorAll('.seat.available');
+        const selectedSeatsDiv = document.getElementById('selected-seats-summary');
+        const totalPriceDiv = document.getElementById('total-price');
+        const continueBtn = document.getElementById('btn-continue');
+        const reservaForm = document.getElementById('reserva-form');
+        const precioAsiento = 10.00; // Precio por asiento en dólares
+        let selectedSeats = [];
+
+        seats.forEach(seat => {
+            seat.addEventListener('click', function () {
+                const fila = this.getAttribute('data-fila');
+                const numero = this.getAttribute('data-numero');
+                const salaId = this.getAttribute('data-sala');
+                const horarioId = this.getAttribute('data-horario');
+                const seatId = `${fila}${numero}`; // Identificador para UI
+
+                if (this.classList.contains('selected')) {
+                    // Deseleccionar este asiento
+                    this.classList.remove('selected');
+                    selectedSeats = selectedSeats.filter(s => s.seatId !== seatId);
+                } else {
+                    // Antes de seleccionar, validar que sea contiguo con los asientos ya seleccionados
+                    if (canSelectSeat(fila, parseInt(numero))) {
+                        this.classList.add('selected');
+                        selectedSeats.push({
+                            salaId: salaId,
+                            horarioId: horarioId,
+                            fila: fila,
+                            numero: numero,
+                            seatId: seatId,
+                            etiqueta: `${fila}${numero}`
+                        });
+                    } else {
+                        alert('Solo puedes seleccionar asientos contiguos en la misma fila.');
+                        return;
+                    }
+                }
+
+                // Organizar los asientos seleccionados por fila y número
+                selectedSeats.sort((a, b) => {
+                    if (a.fila !== b.fila) {
+                        return a.fila.localeCompare(b.fila);
+                    }
+                    return parseInt(a.numero) - parseInt(b.numero);
+                });
+
+                updateSelectionSummary();
+            });
+        });
+
+        function canSelectSeat(fila, numero) {
+            // Si no hay asientos seleccionados, se puede seleccionar cualquiera
+            if (selectedSeats.length === 0) {
+                return true;
+            }
+
+            // Filtrar asientos seleccionados en la misma fila
+            const seatsInSameRow = selectedSeats.filter(s => s.fila === fila);
+
+            // Si no hay asientos seleccionados en esta fila, verificar si todas las selecciones
+            // actuales están en una sola fila
+            if (seatsInSameRow.length === 0) {
+                const uniqueRows = [...new Set(selectedSeats.map(s => s.fila))];
+                if (uniqueRows.length > 0) {
+                    return false; // Ya hay asientos seleccionados en otra fila
+                }
+                return true;
+            }
+
+            // Obtener números de asientos en la misma fila
+            const seatNumbers = seatsInSameRow.map(s => parseInt(s.numero));
+            const min = Math.min(...seatNumbers);
+            const max = Math.max(...seatNumbers);
+
+            // El nuevo asiento debe ser adyacente a los existentes (justo antes o después)
+            return numero === min - 1 || numero === max + 1;
+        }
+
+        function updateSelectionSummary() {
+            if (selectedSeats.length === 0) {
+                selectedSeatsDiv.innerHTML = '<p>No has seleccionado asientos</p>';
+                totalPriceDiv.textContent = '$0.00';
+                continueBtn.disabled = true;
+                return;
+            }
+
+            let html = '<ul class="list-unstyled">';
+
+            // Agrupar asientos por fila
+            const seatsByRow = {};
+            selectedSeats.forEach(seat => {
+                if (!seatsByRow[seat.fila]) {
+                    seatsByRow[seat.fila] = [];
+                }
+                seatsByRow[seat.fila].push(seat);
+            });
+
+            // Mostrar asientos agrupados por fila
+            for (const fila in seatsByRow) {
+                const asientosFila = seatsByRow[fila];
+                const etiquetas = asientosFila.map(s => s.etiqueta).join(', ');
+                html += `<li>Fila ${fila}: ${etiquetas}</li>`;
+            }
+
+            html += '</ul>';
+            selectedSeatsDiv.innerHTML = html;
+
+            const total = selectedSeats.length * precioAsiento;
+            totalPriceDiv.textContent = `$${total.toFixed(2)}`;
+            continueBtn.disabled = false;
+        }
+
+        // Manejar el botón de continuar
+        continueBtn.addEventListener('click', function() {
+            if (selectedSeats.length === 0) {
+                alert('Por favor selecciona al menos un asiento para continuar.');
+                return;
+            }
+
+            // Necesitamos enviar solicitudes para insertar cada asiento seleccionado
+            procesarReservas(0);
+        });
+
+        // Función para procesar las reservas de forma secuencial
+        function procesarReservas(index) {
+            if (index >= selectedSeats.length) {
+                // Hemos terminado de procesar todos los asientos, redirigir al índice
+                window.location.href = '@Url.Action("Index","Peliculas")';
+                return;
+            }
+
+            const seat = selectedSeats[index];
+
+            // Rellenar el formulario con los datos del asiento actual
+            document.getElementById('IdSala').value = seat.salaId;
+            document.getElementById('IdHorario').value = seat.horarioId;
+            document.getElementById('Numero').value = seat.numero;
+            document.getElementById('Fila').value = seat.fila;
+
+            // Enviar el formulario mediante AJAX para no perder el estado
+            const formData = new FormData(reservaForm);
+
+            fetch('@Url.Action("AsientosReserva")', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Procesar el siguiente asiento
+                procesarReservas(index + 1);
+            })
+            .catch(error => {
+                console.error('Error al reservar asiento:', error);
+                alert('Ha ocurrido un error al reservar el asiento. Por favor, inténtalo de nuevo.');
+            });
+        }
+    });
+</script>

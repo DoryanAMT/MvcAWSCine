@@ -1,0 +1,185 @@
+﻿@model HorarioPelicula
+
+@{
+    ViewData["Title"] = "Programar Nueva Función";
+
+    List<ComboPeliculas> comboPeliculas = ViewData["COMBOPELICULAS"] as List<ComboPeliculas>;
+    List<ComboSalas> comboSalas = ViewData["COMBOSALAS"] as List<ComboSalas>;
+    List<ComboVersiones> comboVersiones = ViewData["COMBOVERSIONES"] as List<ComboVersiones>;
+    List<Evento> eventos = ViewData["CALENDARIOHORARIOPELICULAS"] as List<Evento>;
+}
+
+<div class="container-fluid my-4 fade-in">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fa fa-film me-2 text-danger"></i>Programar Nueva Función</h2>
+                <a asp-action="Index" class="btn btn-outline-dark">
+                    <i class="fa fa-arrow-left me-2"></i>Volver a la Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Formulario de creación -->
+        <div class="col-lg-4 col-md-5 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fa fa-calendar-plus me-2"></i>Datos de la Función</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Película:</label>
+                            <select name="IdPelicula" class="form-select" required>
+                                <option value="" disabled selected>Seleccionar película...</option>
+                                @foreach (ComboPeliculas pelicula in comboPeliculas)
+                                {
+                                    <option value="@pelicula.Id">@pelicula.Nombre</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Sala:</label>
+                                <select name="IdSala" class="form-select" required>
+                                    <option value="" disabled selected>Seleccionar sala...</option>
+                                    @foreach (ComboSalas sala in comboSalas)
+                                    {
+                                        <option value="@sala.Id">@sala.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Versión:</label>
+                                <select name="IdVersion" class="form-select" required>
+                                    <option value="" disabled selected>Seleccionar versión...</option>
+                                    @foreach (ComboVersiones version in comboVersiones)
+                                    {
+                                        <option value="@version.Id">@version.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="HoraFuncion" class="form-label fw-bold">Fecha y Hora:</label>
+                                <input asp-for="HoraFuncion" type="datetime-local" class="form-control" required />
+                                <span asp-validation-for="HoraFuncion" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="AsientosDisponibles" class="form-label fw-bold">Asientos:</label>
+                                <input asp-for="AsientosDisponibles" type="number" min="1" class="form-control" required />
+                                <span asp-validation-for="AsientosDisponibles" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Estado de la Función:</label>
+                            <select name="Estado" class="form-select">
+                                <option value="A">Activo</option>
+                                <option value="I">Inactivo</option>
+                                <option value="C">Cancelado</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa fa-save me-2"></i>Guardar Función
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendario -->
+        <div class="col-lg-8 col-md-7">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fa fa-calendar me-2"></i>Calendario de Funciones</h5>
+                </div>
+                <div class="card-body">
+                    <div id="calendario" style="width: 100%; height: 600px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Inicializar calendario
+            var calendarEl = document.getElementById('calendario');
+
+            if (!calendarEl) {
+                console.error("Elemento 'calendario' no encontrado en el DOM.");
+                return;
+            }
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                height: 'auto',
+                contentHeight: 580,
+                aspectRatio: 1.8,
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                dayMaxEvents: true, // permitir "más" para eventos adicionales
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                buttonText: {
+                    today: 'Hoy',
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día'
+                },
+                events: [
+        @foreach (var evento in eventos)
+        {
+            @: {
+            @:     title: "@evento.Titulo",
+            @:     start: "@evento.FechaInicio.ToString("yyyy-MM-ddTHH:mm:ss")",
+            @:     end: "@evento.FechaFin.ToString("yyyy-MM-ddTHH:mm:ss")",
+            @:     backgroundColor: "#e50914",
+            @:     borderColor: "#e50914"
+            @: },
+        }
+                ],
+                eventClick: function(info) {
+                    alert('Función: ' + info.event.title);
+                },
+                dateClick: function(info) {
+                    // Al hacer clic en una fecha, establecerla en el campo de fecha/hora
+                    var fechaSeleccionada = new Date(info.dateStr);
+                    var ahora = new Date();
+                    fechaSeleccionada.setHours(ahora.getHours(), 0, 0);
+
+                    // Formatear fecha para datetime-local input
+                    var formattedDate = fechaSeleccionada.toISOString().slice(0,16);
+                    document.querySelector('input[name="HoraFuncion"]').value = formattedDate;
+                }
+            });
+
+            calendar.render();
+
+            // Asegurar que el calendario se adapte al tamaño de la pantalla
+            window.addEventListener('resize', function() {
+                calendar.updateSize();
+            });
+
+            // Animación para el formulario
+            $('.card').addClass('fade-in');
+        });
+    </script>
+}

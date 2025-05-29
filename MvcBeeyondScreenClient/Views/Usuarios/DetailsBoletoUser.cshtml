@@ -1,0 +1,252 @@
+﻿@model ViewFacturaBoleto
+
+@{
+    ViewData["Title"] = "Detalle del Boleto";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Boletos" asp-action="BoletosUser">Mis Boletos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detalle del Boleto</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm ticket-detail-card">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-ticket-alt me-2"></i>Detalle del Boleto
+                    </h3>
+                    <span class="badge bg-danger">ID: @Model.Id.ToString().PadLeft(8, '0')</span>
+                </div>
+
+                <div class="card-body">
+                    <div class="movie-info mb-4">
+                        <h4 class="movie-title">@Model.Pelicula</h4>
+                        <div class="movie-meta">
+                            <span class="badge bg-secondary me-2">@Model.Idioma</span>
+                            <span class="text-muted">Sala @Model.Sala</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <h5><i class="fas fa-building text-danger me-2"></i>Cine</h5>
+                                <p class="mb-0">@Model.Cine</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <h5><i class="fas fa-calendar-alt text-danger me-2"></i>Fecha y Hora</h5>
+                                <p class="mb-0">@Model.HoraFuncion.ToString("dddd, dd MMMM yyyy")</p>
+                                <p class="mb-0"><strong>@Model.HoraFuncion.ToString("HH:mm")</strong> hrs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <h5><i class="fas fa-users text-danger me-2"></i>Cantidad de Boletos</h5>
+                                <p class="mb-0">@Model.NumBoletos boleto(s)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <h5><i class="fas fa-dollar-sign text-danger me-2"></i>Total Pagado</h5>
+                                <p class="mb-0 fs-4 fw-bold">$@Model.Total</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-group mb-4">
+                        <h5><i class="fas fa-chair text-danger me-2"></i>Asientos</h5>
+                        <div class="seats-container">
+                            @foreach (var asiento in Model.Asientos.Split(','))
+                            {
+                                <span class="seat-badge">@asiento.Trim()</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="screen-container text-center mb-4">
+                        <div class="screen mb-2"></div>
+                        <p class="text-muted small">PANTALLA</p>
+                    </div>
+
+                    <div class="info-group">
+                        <h5><i class="fas fa-info-circle text-danger me-2"></i>Información Adicional</h5>
+                        <ul class="mb-0">
+                            <li>Presenta este boleto en la entrada del cine 15 minutos antes de la función.</li>
+                            <li>No se permiten cambios ni reembolsos después de la compra.</li>
+                            <li>El boleto es válido únicamente para la función especificada.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-qrcode me-2"></i>Código QR</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=BOLETO-@Model.Id" alt="QR Code" class="img-fluid mb-3" />
+                    <p class="text-muted mb-0">Presenta este código QR al ingresar al cine</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog me-2"></i>Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-dark" onclick="imprimirBoleto(@Model.Id)">
+                            <i class="fas fa-print me-2"></i>Imprimir Boleto
+                        </button>
+                        <button type="button" class="btn btn-outline-dark" onclick="descargarBoleto(@Model.Id)">
+                            <i class="fas fa-download me-2"></i>Descargar PDF
+                        </button>
+                        <button type="button" class="btn btn-outline-dark" onclick="enviarEmail(@Model.Id)">
+                            <i class="fas fa-envelope me-2"></i>Enviar por Email
+                        </button>
+                        <a href="#" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#mapaModal">
+                            <i class="fas fa-map-marker-alt me-2"></i>Ver Ubicación del Cine
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mapa -->
+<div class="modal fade" id="mapaModal" tabindex="-1" aria-labelledby="mapaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mapaModalLabel">
+                    <i class="fas fa-map-marker-alt me-2"></i>Ubicación: @Model.Cine
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <!-- Placeholder para el mapa -->
+                    <div class="bg-light d-flex justify-content-center align-items-center">
+                        <div class="text-center">
+                            <i class="fas fa-map-marked-alt fa-5x text-muted mb-3"></i>
+                            <h5>Mapa de @Model.Cine</h5>
+                            <p class="text-muted mb-0">Aquí se mostraría el mapa interactivo del cine</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-danger">
+                    <i class="fas fa-directions me-2"></i>Cómo llegar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ticket-detail-card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .movie-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-group {
+        margin-bottom: 1rem;
+    }
+
+        .info-group h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+    .seats-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .seat-badge {
+        display: inline-block;
+        padding: 0.5rem 0.75rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    .screen-container {
+        margin: 1.5rem 0;
+    }
+
+    .screen {
+        height: 10px;
+        background-color: var(--primary);
+        width: 80%;
+        margin: 0 auto;
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+        .breadcrumb-item a:hover {
+            text-decoration: underline;
+        }
+
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+
+    media (max-width: 767.98px) {
+        .info-group
+
+    {
+        margin-bottom: 1.5rem;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function imprimirBoleto(id) {
+            alert('Imprimiendo boleto #' + id);
+            // Aquí implementarías la lógica para imprimir
+        }
+
+        function descargarBoleto(id) {
+            alert('Descargando boleto #' + id + ' en PDF');
+            // Aquí implementarías la lógica para descargar PDF
+        }
+
+        function enviarEmail(id) {
+            alert('Enviando boleto #' + id + ' por email');
+            // Aquí implementarías la lógica para enviar email
+        }
+    </script>
+}

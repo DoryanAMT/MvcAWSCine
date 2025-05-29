@@ -1,0 +1,89 @@
+﻿@model IEnumerable<NugetBeeyondScreen.Models.HorarioPelicula>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create"
+    class="btn btn-success">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdHorario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdPelicula)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdSala)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdVersion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HoraFuncion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AsientosDisponibles)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdHorario)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdPelicula)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdSala)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdVersion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.HoraFuncion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AsientosDisponibles)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+
+                <td>
+                    @* <a asp-controller="HorarioPeliculas"
+                       asp-action="Details"
+                       asp-route-idHorarioPelicula="@item.IdHorario"
+                       class="btn btn-primary">
+                        Details
+                    </a> |
+                    <a asp-controller="HorarioPeliculas"
+                       asp-action="Edit"
+                       asp-route-idHorarioPelicula="@item.IdHorario"
+                       class="btn btn-warning">
+                        Edit
+                    </a> | *@
+                    <a asp-controller="HorarioPeliculas"
+                       asp-action="Delete"
+                       asp-route-idHorarioPelicula="@item.IdHorario"
+                       class="btn btn-danger">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

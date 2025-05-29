@@ -1,0 +1,217 @@
+/* Estilos generales */
+:root {
+    --primary: #e50914;
+    --secondary: #221f1f;
+    --light: #f5f5f1;
+    --dark: #141414;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-dark {
+    background-color: var(--dark) !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.2s;
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+    .nav-link:hover {
+        color: var(--primary) !important;
+    }
+
+/* Botones */
+.btn-danger {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+    .btn-danger:hover {
+        background-color: #c50812;
+        border-color: #c50812;
+    }
+
+.btn-outline-light:hover {
+    color: var(--dark);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--dark) !important;
+    margin-top: 2rem;
+}
+
+    .footer h5 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .footer a {
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+        .footer a:hover {
+            color: white !important;
+        }
+
+.social-links a {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+}
+
+    .social-links a:hover {
+        background-color: var(--primary);
+        transform: translateY(-3px);
+    }
+
+/* Contenedores de cards para películas */
+.movie-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    margin-bottom: 20px;
+}
+
+    .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .movie-card img {
+        height: 300px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .movie-card .card-title {
+        font-weight: 600;
+    }
+
+.movie-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+    .movie-info i {
+        margin-right: 0.5rem;
+        color: var(--primary);
+    }
+
+/* Botones de acción */
+.action-buttons .btn {
+    margin-right: 0.5rem;
+    border-radius: 50px;
+    padding: 0.375rem 1rem;
+}
+
+/* Animaciones */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Tablas */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+    .table thead {
+        background-color: var(--dark);
+        color: white;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: rgba(229, 9, 20, 0.05);
+}
+
+/* Formularios */
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+/* Paginación */
+.pagination .page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pagination .page-link {
+    color: var(--dark);
+}
+
+    .pagination .page-link:hover {
+        color: var(--primary);
+    }
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .movie-card img {
+        height: 200px;
+    }
+}
+
+/* Footer siempre al fondo */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex-shrink: 0;
+    background-color: var(--dark) !important;
+    margin-top: auto; /* Cambiado de 2rem a auto */
+}

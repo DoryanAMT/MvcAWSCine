@@ -1,0 +1,239 @@
+﻿@model IEnumerable<NugetBeeyondScreen.Models.ViewFacturaBoleto>
+
+@{
+    ViewData["Title"] = "Mis Boletos";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="display-5 mb-3">
+                <i class="fas fa-ticket-alt me-2 text-danger"></i>Mis Boletos
+            </h2>
+            <p class="text-muted">Visualiza todos tus boletos de cine adquiridos.</p>
+        </div>
+    </div>
+
+    @if (Model == null)
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No tienes boletos adquiridos. ¡Compra tu primera película ahora!
+            <a asp-controller="Peliculas" asp-action="Index" class="btn btn-danger btn-sm ms-3">
+                <i class="fas fa-film me-1"></i>Ver Películas
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-12 mb-4">
+                    <div class="card ticket-card shadow-sm">
+                        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-film me-2"></i>@item.Pelicula
+                            </h5>
+                            <span class="badge bg-danger rounded-pill">@item.Idioma</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="ticket-details">
+                                        <div class="row mb-3">
+                                            <div class="col-sm-6">
+                                                <div class="ticket-info">
+                                                    <i class="fas fa-building text-danger"></i>
+                                                    <span class="fw-bold">Cine:</span>
+                                                    <span>@item.Cine</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="ticket-info">
+                                                    <i class="fas fa-door-open text-danger"></i>
+                                                    <span class="fw-bold">Sala:</span>
+                                                    <span>@item.Sala</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-sm-6">
+                                                <div class="ticket-info">
+                                                    <i class="fas fa-clock text-danger"></i>
+                                                    <span class="fw-bold">Función:</span>
+                                                    <span>@item.HoraFuncion.ToString("dd/MM/yyyy HH:mm")</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="ticket-info">
+                                                    <i class="fas fa-ticket-alt text-danger"></i>
+                                                    <span class="fw-bold">Cantidad:</span>
+                                                    <span>@item.NumBoletos boleto(s)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="ticket-info mb-3">
+                                            <i class="fas fa-chair text-danger"></i>
+                                            <span class="fw-bold">Asientos:</span>
+                                            <span>@item.Asientos</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="ticket-barcode text-center">
+                                        <div class="barcode-container mb-2">
+                                            <i class="fas fa-barcode fa-4x"></i>
+                                            <p class="mb-0 ticket-id">ID: @item.Id.ToString().PadLeft(8, '0')</p>
+                                        </div>
+                                        <div class="total-amount">
+                                            <p class="mb-0">Total</p>
+                                            <h3 class="text-danger">$@item.Total</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light d-flex justify-content-end">
+                            <a asp-controller="Usuarios"
+                               asp-action="DetailsBoletoUser"
+                               asp-route-idBoletoUser="@item.Id"
+                               class="btn btn-outline-dark">
+                                <i class="fas fa-info-circle me-1"></i>Detalles
+                            </a>
+                            <button type="button" class="btn btn-outline-dark ms-2" onclick="imprimirBoleto(@item.Id)">
+                                <i class="fas fa-print me-1"></i>Imprimir
+                            </button>
+                            <a href="#" class="btn btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#qrModal-@item.Id">
+                                <i class="fas fa-qrcode me-1"></i>Ver QR
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal QR para cada boleto -->
+                <div class="modal fade" id="qrModal-@item.Id" tabindex="-1" aria-labelledby="qrModalLabel-@item.Id" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="qrModalLabel-@item.Id">
+                                    <i class="fas fa-qrcode me-2"></i>Código QR - @item.Pelicula
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div class="qr-container p-3">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=BOLETO-@item.Id" alt="QR Code" class="img-fluid mb-3" />
+                                    <p class="text-muted mb-0">Muestra este código QR en la entrada del cine</p>
+                                </div>
+                                <div class="ticket-summary mt-4">
+                                    <h6>@item.Pelicula</h6>
+                                    <p class="mb-1">@item.Cine - Sala @item.Sala</p>
+                                    <p class="mb-1">@item.HoraFuncion.ToString("dd/MM/yyyy HH:mm")</p>
+                                    <p class="mb-1">Asientos: @item.Asientos</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-danger" onclick="imprimirQR(@item.Id)">
+                                    <i class="fas fa-print me-1"></i>Imprimir QR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .ticket-card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s;
+        position: relative;
+    }
+
+        .ticket-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ticket-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary);
+        }
+
+    .ticket-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+    }
+
+        .ticket-info i {
+            min-width: 16px;
+        }
+
+    .barcode-container {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .total-amount {
+        margin-top: 10px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .ticket-id {
+        font-family: monospace;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .qr-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .ticket-summary {
+        border-top: 1px solid #e9ecef;
+        padding-top: 15px;
+    }
+
+    media (max-width: 767.98px) {
+        .ticket-barcode
+
+    {
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 20px;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function imprimirBoleto(id) {
+            // Aquí se implementaría la lógica para imprimir el boleto
+            alert('Imprimiendo boleto #' + id);
+        }
+
+        function imprimirQR(id) {
+            // Aquí se implementaría la lógica para imprimir el QR
+            alert('Imprimiendo QR del boleto #' + id);
+        }
+    </script>
+}
