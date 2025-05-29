@@ -1,0 +1,46 @@
+﻿@using MvcBeeyondScreenClient.Models
+@model IndexAdmin
+@{
+	ViewData["Title"] = "IndexAdmin";
+}
+
+<h1>Admin Home</h1>
+<h1>Peliculas</h1>
+@foreach (Pelicula pelicula in Model.Peliculas)
+{
+	<div class="card mb-3">
+		<div class="row g-0">
+			<div class="col-md-4">
+				<img src="@pelicula.ImgPoster" class="img-fluid rounded-start" alt="@pelicula.Titulo">
+			</div>
+			<div class="col-md-8">
+				<div class="card-body">
+					<h5 class="card-title">@pelicula.Titulo</h5>
+					<p class="card-text">@pelicula.Sinopsis</p>
+					<p class="card-text"><small class="text-muted">Fecha de lanzamiento: @pelicula.FechaLanzamiento.ToShortDateString()</small></p>
+					<a href="@Url.Action("Edit", "Peliculas", new { id = pelicula.IdPelicula })" class="btn btn-primary">Editar</a>
+					<a href="@Url.Action("Delete", "Peliculas", new { id = pelicula.IdPelicula })" class="btn btn-danger">Eliminar</a>
+				</div>
+			</div>
+		</div>
+	</div>
+})
+
+<hr />
+
+<h1>Horarios</h1>
+
+@foreach (HorarioPelicula horarios in Model.HorarioPelicula)
+{
+	<div class="card mb-3">
+		<div class="row g-0">
+			<div class="col-md-8">
+				<div class="card-body">
+					<h5 class="card-title">@horarios.IdPelicula</h5>
+					<p class="card-text">Fecha: @horarios.IdVersion</p>
+					<p class="card-text">Hora: @horarios.HoraFuncion.ToShortTimeString()</p>
+				</div>
+			</div>
+		</div>
+	</div>
+}
