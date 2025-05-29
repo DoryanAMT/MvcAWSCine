@@ -10,7 +10,7 @@
 <h2>Gestionar Películas</h2>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <a class="btn btn-outline-primary" href="@Url.Action("Create", "Peliculas")">+ Añadir Película</a>
+        <a class="btn btn-danger">+ Añadir Película</a>
     </div>
     <div>
         <select id="filtroPeliculaTitulo" class="form-select">
@@ -30,10 +30,7 @@
     @for (int i = 0; i < Model.Peliculas.Count; i++)
     {
         var pelicula = Model.Peliculas[i];
-        <div class="card shadow-sm pelicula-card"
-             data-pelicula-id="@pelicula.IdPelicula"
-             data-index="@i"
-             style="width: 180px; display: @(i < 5 ? "block" : "none")">
+        <div class="card shadow-sm pelicula-card" style="width: 180px; display: @(i < 5 ? "block" : "none")">
             <img src="@pelicula.ImgPoster" class="card-img-top" alt="@pelicula.Titulo" style="height: 250px; object-fit: cover;">
             <div class="card-body p-2">
                 <h6 class="card-title text-truncate">@pelicula.Titulo</h6>
@@ -42,7 +39,7 @@
                         Gestionar
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="@Url.Action("Details", "Peliculas", new { id = pelicula.IdPelicula })">Detalles</a></li>
+                        <li><a asp-action="Details" asp-controller="Peliculas" asp-route-idpelicula="@pelicula.IdPelicula" class="dropdown-item">Detalles</a></li>
                         <li><a class="dropdown-item" href="@Url.Action("Edit", "Peliculas", new { id = pelicula.IdPelicula })">Editar</a></li>
                         <li><a class="dropdown-item text-danger" href="@Url.Action("Delete", "Peliculas", new { id = pelicula.IdPelicula })">Eliminar</a></li>
                     </ul>
@@ -65,7 +62,7 @@
 <h2>Gestionar Horarios</h2>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <a class="btn btn-outline-primary" href="@Url.Action("Create", "Horarios")">+ Nuevo Horario</a>
+		<a asp-action="Create" asp-controller="HorarioPeliculas" class="btn btn-danger">+ Añadir Horario</a>
     </div>
     <div class="d-flex gap-2">
         <select id="filtroHorarioTitulo" class="form-select">
