@@ -42,10 +42,10 @@ namespace MvcBeeyondScreenClient.Services
         }
 
         // Obtener todas las películas
-        public async Task<List<Pelicula>> GetPeliculasAsync()
+        public async Task<List<ModelDetailsPelicula>> GetPeliculasAsync()
         {
             string request = "api/peliculas";
-            return await this.CallApiAsync<List<Pelicula>>(request);
+            return await this.CallApiAsync<List<ModelDetailsPelicula>>(request);
         }
 
         // Insertar una película
