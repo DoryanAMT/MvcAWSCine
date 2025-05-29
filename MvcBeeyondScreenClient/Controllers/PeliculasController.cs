@@ -27,15 +27,27 @@ namespace MvcBeeyondScreenClient.Controllers
         //Gestion del index del Admin
         public async Task<IActionResult> IndexAdmin()
         {
-            List<Pelicula> peliculas = await this.service.GetPeliculasAsync();
-            List<HorarioPelicula> horarios = await this.service.GetHorarioPeliculasAsync();
-            IndexAdmin index = new IndexAdmin 
+            var peliculas = await this.service.GetPeliculasAsync();
+            var horarios = await this.service.GetHorarioPeliculasAsync();
+
+            var dto = horarios.Select(h => new HorarioDTO
+            {
+                IdHorario = h.IdHorario,
+                IdPelicula = h.IdPelicula,
+                Hora = h.HoraFuncion,
+                Sala = h.IdSala,
+                Aforo = h.AsientosDisponibles,
+                Estado = h.Estado.ToString(),
+                Pelicula = h.IdPelicula != null ? peliculas.FirstOrDefault(p => p.IdPelicula == h.IdPelicula) : null
+            }).ToList();
+
+            var model = new IndexAdmin
             {
                 Peliculas = peliculas,
-                HorarioPelicula = horarios
-
+                HorarioPelicula = dto
             };
-            return View(index);
+
+            return View(model);
         }
     }
 }

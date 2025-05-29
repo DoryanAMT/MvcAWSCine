@@ -1,46 +1,154 @@
 ﻿@using MvcBeeyondScreenClient.Models
 @model IndexAdmin
 @{
-	ViewData["Title"] = "IndexAdmin";
+    ViewData["Title"] = "IndexAdmin";
 }
 
 <h1>Admin Home</h1>
-<h1>Peliculas</h1>
-@foreach (Pelicula pelicula in Model.Peliculas)
-{
-	<div class="card mb-3">
-		<div class="row g-0">
-			<div class="col-md-4">
-				<img src="@pelicula.ImgPoster" class="img-fluid rounded-start" alt="@pelicula.Titulo">
-			</div>
-			<div class="col-md-8">
-				<div class="card-body">
-					<h5 class="card-title">@pelicula.Titulo</h5>
-					<p class="card-text">@pelicula.Sinopsis</p>
-					<p class="card-text"><small class="text-muted">Fecha de lanzamiento: @pelicula.FechaLanzamiento.ToShortDateString()</small></p>
-					<a href="@Url.Action("Edit", "Peliculas", new { id = pelicula.IdPelicula })" class="btn btn-primary">Editar</a>
-					<a href="@Url.Action("Delete", "Peliculas", new { id = pelicula.IdPelicula })" class="btn btn-danger">Eliminar</a>
-				</div>
-			</div>
-		</div>
-	</div>
-})
+
+<!-- 🧰 Herramientas Películas -->
+<h2>Gestionar Películas</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <a class="btn btn-outline-primary" href="@Url.Action("Create", "Peliculas")">+ Añadir Película</a>
+    </div>
+    <div>
+        <select id="filtroPeliculaTitulo" class="form-select">
+            <option value="">Filtrar por título</option>
+            @foreach (var peli in Model.Peliculas.OrderBy(p => p.Titulo))
+            {
+                <option value="@peli.IdPelicula">@peli.Titulo</option>
+            }
+        </select>
+    </div>
+</div>
 
 <hr />
 
-<h1>Horarios</h1>
+<!-- 🎬 Películas -->
+<div id="contenedorPeliculas" class="d-flex flex-wrap gap-3">
+    @for (int i = 0; i < Model.Peliculas.Count; i++)
+    {
+        var pelicula = Model.Peliculas[i];
+        <div class="card shadow-sm pelicula-card"
+             data-pelicula-id="@pelicula.IdPelicula"
+             data-index="@i"
+             style="width: 180px; display: @(i < 5 ? "block" : "none")">
+            <img src="@pelicula.ImgPoster" class="card-img-top" alt="@pelicula.Titulo" style="height: 250px; object-fit: cover;">
+            <div class="card-body p-2">
+                <h6 class="card-title text-truncate">@pelicula.Titulo</h6>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Gestionar
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="@Url.Action("Details", "Peliculas", new { id = pelicula.IdPelicula })">Detalles</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Edit", "Peliculas", new { id = pelicula.IdPelicula })">Editar</a></li>
+                        <li><a class="dropdown-item text-danger" href="@Url.Action("Delete", "Peliculas", new { id = pelicula.IdPelicula })">Eliminar</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
-@foreach (HorarioPelicula horarios in Model.HorarioPelicula)
+@if (Model.Peliculas.Count > 5)
 {
-	<div class="card mb-3">
-		<div class="row g-0">
-			<div class="col-md-8">
-				<div class="card-body">
-					<h5 class="card-title">@horarios.IdPelicula</h5>
-					<p class="card-text">Fecha: @horarios.IdVersion</p>
-					<p class="card-text">Hora: @horarios.HoraFuncion.ToShortTimeString()</p>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="text-center mt-3">
+        <button id="btnVerMas" class="btn btn-outline-danger">Ver más</button>
+    </div>
+}
+
+<hr />
+
+<!-- 🧰 Herramientas Horarios -->
+<h2>Gestionar Horarios</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <a class="btn btn-outline-primary" href="@Url.Action("Create", "Horarios")">+ Nuevo Horario</a>
+    </div>
+    <div class="d-flex gap-2">
+        <select id="filtroHorarioTitulo" class="form-select">
+            <option value="">Filtrar por título</option>
+            @foreach (var horario in Model.HorarioPelicula.OrderBy(h => h.Pelicula.Titulo).GroupBy(h => h.IdPelicula).Select(g => g.First()))
+            {
+                <option value="@horario.IdPelicula">@horario.Pelicula.Titulo</option>
+            }
+        </select>
+
+        <select id="filtroHorarioSala" class="form-select">
+            <option value="">Filtrar por sala</option>
+            @foreach (var sala in Model.HorarioPelicula.Select(h => h.Sala).Distinct().OrderBy(s => s))
+            {
+                <option value="@sala">Sala @sala</option>
+            }
+        </select>
+
+        <select id="filtroHorarioEstado" class="form-select">
+            <option value="">Filtrar por estado</option>
+            @foreach (var estado in Model.HorarioPelicula.Select(h => h.Estado).Distinct().OrderBy(e => e))
+            {
+                <option value="@estado">@estado</option>
+            }
+        </select>
+    </div>
+</div>
+
+<hr />
+
+<!-- ⏰ Horarios -->
+<div id="contenedorHorarios" class="row g-3">
+    @foreach (var horario in Model.HorarioPelicula)
+    {
+        <div class="col-12 col-lg-6 horario-card"
+             data-pelicula-id="@horario.IdPelicula"
+             data-sala="@horario.Sala"
+             data-estado="@horario.Estado">
+            <div class="card d-flex flex-row shadow-sm h-100">
+                <img src="@horario.Pelicula.ImgFondo" alt="@horario.Pelicula.Titulo"
+                     style="width: 150px; height: 150px; object-fit: cover; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" />
+                <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                    <div>
+                        <h6>@horario.Pelicula.Titulo</h6>
+                        <p class="mb-1"><strong>Fecha:</strong> @horario.Hora.ToString("dd/MM/yyyy")</p>
+                        <p class="mb-1"><strong>Hora:</strong> @horario.Hora.ToString("HH:mm")</p>
+                        <p class="mb-1"><strong>Sala:</strong> @horario.Sala</p>
+                        <p class="mb-1"><strong>Estado:</strong> @horario.Estado</p>
+                        <p class="mb-0"><strong>Aforo:</strong> @horario.Aforo</p>
+                    </div>
+                    <div class="dropdown text-end mt-2">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Gestionar
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Horarios/Editar/@horario.IdHorario">Editar</a></li>
+                            <li><a class="dropdown-item text-danger" href="/Horarios/Eliminar/@horario.IdHorario" onclick="return confirm('¿Seguro que quieres eliminar este horario?')">Eliminar</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        let peliculasMostradas = 5;
+        const incremento = 5;
+        const total = document.querySelectorAll(".pelicula-card").length;
+
+        document.getElementById("btnVerMas")?.addEventListener("click", function () {
+            const cards = document.querySelectorAll(".pelicula-card");
+
+            for (let i = peliculasMostradas; i < peliculasMostradas + incremento && i < total; i++) {
+                cards[i].style.display = "block";
+            }
+
+            peliculasMostradas += incremento;
+
+            if (peliculasMostradas >= total) {
+                this.style.display = "none";
+            }
+        });
+    </script>
 }
