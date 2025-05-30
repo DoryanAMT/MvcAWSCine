@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MvcBeeyondScreenClient.Filters;
 using MvcBeeyondScreenClient.Models;
 using MvcBeeyondScreenClient.Services;
+using NugetBeeyondScreen.DTOs;
 using NugetBeeyondScreen.Models;
 
 namespace MvcBeeyondScreenClient.Controllers

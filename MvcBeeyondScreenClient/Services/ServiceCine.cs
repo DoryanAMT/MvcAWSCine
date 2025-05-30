@@ -48,6 +48,13 @@ namespace MvcBeeyondScreenClient.Services
             return await this.CallApiAsync<List<Pelicula>>(request);
         }
 
+        // Obtener todas las películas con sus horarios
+        public async Task<List<ModelDetailsPelicula>> GetPeliculasConHorariosAsync()
+        {
+            string request = "/api/Peliculas/GetPeliculasConHorarios";
+            return await this.CallApiAsync<List<ModelDetailsPelicula>>(request);
+        }
+
         // Insertar una película
         public async Task<bool> InsertPeliculaAsync(Pelicula pelicula)
         {
@@ -125,18 +132,13 @@ namespace MvcBeeyondScreenClient.Services
             return await this.CallApiAsync<ViewFacturaBoleto>(request,token);
         }
 
-        // Obtener el último ID de usuario
-        public async Task<int> GetLastIdUserAsync()
-        {
-            string request = "api/usuarios/lastid";
-            return await this.CallApiAsync<int>(request);
-        }
 
         // Obtener todos los usuarios
         public async Task<List<Usuario>> GetUsuariosAsync()
         {
             string request = "api/usuarios";
-            return await this.CallApiAsync<List<Usuario>>(request);
+            string token = this.contextAccessor.HttpContext.User.FindFirst("TOKEN")?.Value;
+            return await this.CallApiAsync<List<Usuario>>(request,token);
         }
 
         // Encontrar un usuario por ID
