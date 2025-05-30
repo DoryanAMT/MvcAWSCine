@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MvcBeeyondScreenClient.Models;
 using MvcBeeyondScreenClient.Services;
 using NugetBeeyondScreen.Models;
 
@@ -22,6 +23,31 @@ namespace MvcBeeyondScreenClient.Controllers
             ModelDetailsPelicula model = await this.service.GetDetailsPeliculaAsync(idPelicula);
             return View(model);
         }
-        //  PRUEBA DORYAN
+
+        //Gestion del index del Admin
+        public async Task<IActionResult> IndexAdmin()
+        {
+            var peliculas = await this.service.GetPeliculasAsync();
+            var horarios = await this.service.GetHorarioPeliculasAsync();
+
+            var dto = horarios.Select(h => new HorarioDTO
+            {
+                IdHorario = h.IdHorario,
+                IdPelicula = h.IdPelicula,
+                Hora = h.HoraFuncion,
+                Sala = h.IdSala,
+                Aforo = h.AsientosDisponibles,
+                Estado = h.Estado.ToString(),
+                Pelicula = h.IdPelicula != null ? peliculas.FirstOrDefault(p => p.IdPelicula == h.IdPelicula) : null
+            }).ToList();
+
+            var model = new IndexAdmin
+            {
+                Peliculas = peliculas,
+                HorarioPelicula = dto
+            };
+
+            return View(model);
+        }
     }
 }
