@@ -11,16 +11,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
         <a class="btn btn-danger">+ Añadir Película</a>
-    </div>
-    <div>
-        <select id="filtroPeliculaTitulo" class="form-select">
-            <option value="">Filtrar por título</option>
-            @foreach (var peli in Model.Peliculas.OrderBy(p => p.Titulo))
-            {
-                <option value="@peli.IdPelicula">@peli.Titulo</option>
-            }
-        </select>
-    </div>
+    </div>   
 </div>
 
 <hr />
@@ -63,31 +54,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
 		<a asp-action="Create" asp-controller="HorarioPeliculas" class="btn btn-danger">+ Añadir Horario</a>
-    </div>
-    <div class="d-flex gap-2">
-        <select id="filtroHorarioTitulo" class="form-select">
-            <option value="">Filtrar por título</option>
-            @foreach (var horario in Model.HorarioPelicula.OrderBy(h => h.Pelicula.Titulo).GroupBy(h => h.IdPelicula).Select(g => g.First()))
-            {
-                <option value="@horario.IdPelicula">@horario.Pelicula.Titulo</option>
-            }
-        </select>
-
-        <select id="filtroHorarioSala" class="form-select">
-            <option value="">Filtrar por sala</option>
-            @foreach (var sala in Model.HorarioPelicula.Select(h => h.Sala).Distinct().OrderBy(s => s))
-            {
-                <option value="@sala">Sala @sala</option>
-            }
-        </select>
-
-        <select id="filtroHorarioEstado" class="form-select">
-            <option value="">Filtrar por estado</option>
-            @foreach (var estado in Model.HorarioPelicula.Select(h => h.Estado).Distinct().OrderBy(e => e))
-            {
-                <option value="@estado">@estado</option>
-            }
-        </select>
     </div>
 </div>
 
