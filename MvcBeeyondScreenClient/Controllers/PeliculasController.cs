@@ -22,5 +22,6 @@ namespace MvcBeeyondScreenClient.Controllers
             ModelDetailsPelicula model = await this.service.GetDetailsPeliculaAsync(idPelicula);
             return View(model);
         }
+        //  PRUEBA DORYAN
     }
 }
