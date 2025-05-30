@@ -14,10 +14,23 @@ namespace MvcBeeyondScreenClient.Controllers
         {
             this.service = service;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<Usuario> usuarios = await this.service.GetUsuariosAsync();
+            return View(usuarios);
         }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            Usuario usuario = await this.service.FindUsuarioAsync(id);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_Details", usuario);
+        }
+
 
         public IActionResult Register()
         {
