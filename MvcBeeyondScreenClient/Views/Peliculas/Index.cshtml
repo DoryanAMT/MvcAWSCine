@@ -1,100 +1,205 @@
-﻿@model List<Pelicula>
+﻿@model List<ModelDetailsPelicula>
 
 @{
-    ViewData["Title"] = "Películas";
+    ViewData["Title"] = "Beyond - Películas";
 }
 
-<link rel="stylesheet" href="~/css/peliculas/indexStyle.css" asp-append-version="true" />
+@section Styles {
+    <link rel="stylesheet" href="/css/peliculas/indexStyle.css">
+}
 
-<div class="peliculas-header">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="display-4"><i class="fas fa-film me-3"></i>Películas</h1>
-        <div class="search-container">
-            <input type="text" id="peliculaSearch" class="form-control" placeholder="Buscar película...">
-            <i class="fas fa-search search-icon"></i>
+<!-- Hero Section -->
+<section class="hero-section">
+    <video autoplay muted loop playsinline class="hero-bg-video">
+        <source src="~/videos/The Most Beautiful Shots in Cinematic History II-yt.savetube.me.mp4" type="video/mp4">
+        Tu navegador no soporta el video.
+    </video>
+    <div class="container position-relative">
+        <div class="hero-blur-bg">
+            <h1>Bienvenido a Beyond</h1>
+            <p>Disfruta de cada historia</p>
+            <div class="scroll-indicator">↓</div>
         </div>
     </div>
-    <div class="category-filters mb-4">
-        <button class="btn btn-outline-dark active" data-filter="all">Todas</button>
-        <button class="btn btn-outline-dark" data-filter="recent">Estrenos</button>
-        <button class="btn btn-outline-dark" data-filter="popular">Populares</button>
-    </div>
-</div>
+</section>
 
-<div class="row" id="peliculasList">
-    @if (Model != null && Model.Any())
-    {
-        foreach (var pelicula in Model)
-        {
-            <div class="col-md-6 col-lg-4 col-xl-3 mb-4 pelicula-item">
-                <div class="movie-card h-100">
-                    <div class="poster-container">
-                        <img src="@(string.IsNullOrEmpty(pelicula.ImgPoster) ? "/images/default-poster.jpg" : pelicula.ImgPoster)"
-                             class="card-img-top" alt="@pelicula.Titulo">
-                        <div class="overlay">
-                            <div class="overlay-content">
-                                <a href="javascript:void(0)" class="btn btn-light btn-sm trailer-btn" data-id="@pelicula.IdPelicula">
-                                    <i class="fas fa-play me-2"></i>Ver trailer
-                                </a>
-                                <a asp-action="Details"
-                                   asp-route-idPelicula="@pelicula.IdPelicula"
-                                   class="btn btn-danger btn-sm">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Detalles
-                                </a>
+<!-- Movies Section -->
+<section class="movies-section" id="movies-section">
+    <div class="container">
+        <div class="movies-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2>PELÍCULAS</h2>
+                    <div class="filter-tabs">
+                        <a href="#" class="filter-tab active">ESTRENOS</a>
+                        <a href="#" class="filter-tab">HOY</a>
+                        <a href="#" class="filter-tab">MAÑANA</a>
+                        <a href="#" class="filter-tab">PRÓXIMOS</a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn filters-btn">FILTROS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movies Grid -->
+        <div class="row">
+            @if (Model != null && Model.Count > 0)
+            {
+                @foreach (var item in Model)
+                {
+                    <div class="col-12">
+                        <div class="movie-card">
+                            <div class="row g-0 h-100">
+                                <div class="col-3">
+                                    <div class="movie-poster-container">
+                                        <div class="movie-poster">
+                                            <div class="info-icon">i</div>
+                                            <img src="@item.Pelicula.ImgPoster" alt="@item.Pelicula.Titulo"
+                                                 class="img-fluid h-100 w-100" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-9">
+                                    <div class="movie-info">
+                                        <h3 class="movie-title">@item.Pelicula.Titulo</h3>
+                                        <p class="movie-date">
+                                            @DateTime.Parse(item.Pelicula.FechaLanzamiento.ToString()).ToString("dd/MM/yyyy")
+                                        </p>
+                                        <p class="movie-description">
+                                            <b>Vista general</b><br />
+                                            @{
+                                                string sinopsis = item.Pelicula.Sinopsis?.ToString() ?? "";
+                                                // string shortSinopsis = sinopsis.Length > 120 ? sinopsis.Substring(0, 120) + "..." : sinopsis;
+                                            }
+                                            @(string.IsNullOrEmpty(sinopsis) ? "Sin descripción disponible" : sinopsis)
+                                        </p>
+                                        @if (item.HorarioPelicula != null && item.HorarioPelicula.Count > 0)
+                                        {
+                                            <div class="schedule-grid">
+                                                @{
+                                                    var horariosLimitados = item.HorarioPelicula.Take(8);
+                                                }
+                                                @foreach (var horario in horariosLimitados)
+                                                {
+                                                    DateTime horaFuncion = DateTime.Parse(horario.HoraFuncion.ToString());
+                                                    <div class="schedule-slot">
+                                                        @horaFuncion.ToString("HH:mm")
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="alert alert-warning p-2 mb-2">
+                                                <small>Sin horarios disponibles</small>
+                                            </div>
+                                        }
+
+                                        <a asp-action="Details" asp-route-idPelicula="@item.Pelicula.IdPelicula" class="more-info-btn">Más información</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">@pelicula.Titulo</h5>
-                        <div class="movie-info">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>@pelicula.FechaLanzamiento</span>
-                        </div>
-                        <div class="movie-info">
-                            <i class="fas fa-clock"></i>
-                            <span>@pelicula.DuracionMinutos min</span>
-                        </div>
-                        <p class="card-text sinopsis-preview">@(pelicula.Sinopsis?.Length > 100 ? pelicula.Sinopsis.Substring(0, 100) + "..." : pelicula.Sinopsis)</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <a asp-controller="HorarioPeliculas" asp-action="PeliculaHorarios" asp-route-id="@pelicula.IdPelicula" class="btn btn-danger w-100">
-                            <i class="fas fa-ticket-alt me-2"></i>Comprar boletos
-                        </a>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <h4>No hay películas disponibles</h4>
+                        <p>Por favor, verifica que el modelo contenga datos válidos.</p>
                     </div>
                 </div>
-            </div>
-        }
-    }
-    else
-    {
-        <div class="col-12">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>No hay películas disponibles en este momento.
-            </div>
-        </div>
-    }
-</div>
-
-<!-- Modal para trailer -->
-<div class="modal fade" id="trailerModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="trailerModalLabel">Trailer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="ratio ratio-16x9">
-                    <div id="trailerContainer">
-                        <!-- El trailer se cargará aquí -->
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
-    <script src="~/js/peliculas/indexScript.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.querySelector('.hero-bg-video');
+            if (video) {
+                video.addEventListener('loadedmetadata', function () {
+                    video.currentTime = 0.04;
+                });
+            }
+        });
+
+        let autoScrolled = false;
+        let autoScrolledUp = false;
+
+        function scrollToMoviesSection() {
+            if (!autoScrolled) {
+                autoScrolled = true;
+                autoScrolledUp = false;
+                const target = document.getElementById('movies-section');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        function scrollToHeroSection() {
+            if (!autoScrolledUp) {
+                autoScrolledUp = true;
+                autoScrolled = false;
+                const target = document.querySelector('.hero-section');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Espera a que termine el scroll y ajusta para dejar visible la navbar
+                    setTimeout(() => {
+                        // Cambia 70 por la altura real de tu navbar si es diferente
+                        window.scrollBy({ top: -102, left: 0, behavior: 'instant' });
+                    }, 500);
+                }
+            }
+        }
+
+        // Scroll hacia abajo desde arriba del todo
+        window.addEventListener('wheel', function (e) {
+            if (window.scrollY < 50 && e.deltaY > 0) {
+                scrollToMoviesSection();
+            }
+            // Scroll hacia arriba desde el inicio de movies-section
+            const moviesSection = document.getElementById('movies-section');
+            if (moviesSection) {
+                const rect = moviesSection.getBoundingClientRect();
+                if (rect.top < 50 && rect.top > -50 && e.deltaY < 0) {
+                    scrollToHeroSection();
+                }
+            }
+        }, { passive: true });
+
+        // Touch para móviles
+        let touchStartY = null;
+        window.addEventListener('touchstart', function (e) {
+            if (e.touches.length === 1) {
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchmove', function (e) {
+            const moviesSection = document.getElementById('movies-section');
+            if (touchStartY !== null) {
+                let touchEndY = e.touches[0].clientY;
+                // Desliza hacia arriba desde arriba del todo
+                if (window.scrollY < 50 && touchStartY - touchEndY > 30) {
+                    scrollToMoviesSection();
+                    touchStartY = null;
+                }
+                // Desliza hacia abajo desde el inicio de movies-section
+                if (moviesSection) {
+                    const rect = moviesSection.getBoundingClientRect();
+                    if (rect.top < 50 && rect.top > -50 && touchEndY - touchStartY > 30) {
+                        scrollToHeroSection();
+                        touchStartY = null;
+                    }
+                }
+            }
+        }, { passive: true });
+    </script>
 }
