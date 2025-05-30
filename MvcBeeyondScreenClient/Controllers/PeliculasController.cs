@@ -14,7 +14,7 @@ namespace MvcBeeyondScreenClient.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            List<Pelicula> peliculas = await this.service.GetPeliculasAsync();
+            List<ModelDetailsPelicula> peliculas = await this.service.GetPeliculasAsync();
             return View(peliculas);
         }
         public async Task<IActionResult> Details
