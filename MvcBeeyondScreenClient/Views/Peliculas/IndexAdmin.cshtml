@@ -3,6 +3,10 @@
 @{
     ViewData["Title"] = "IndexAdmin";
 }
+
+<!-- SweetAlert CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+
 <div class="container">
     <h1>Admin Home</h1>
 
@@ -10,7 +14,7 @@
     <h2>Gestionar Películas</h2>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <a class="btn btn-danger">+ Añadir Película</a>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#createPeliculaModal">+ Añadir Película</button>
         </div>
     </div>
 
@@ -31,8 +35,8 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a asp-action="Details" asp-controller="Peliculas" asp-route-idpelicula="@pelicula.IdPelicula" class="dropdown-item">Detalles</a></li>
-                            <li><a class="dropdown-item" href="@Url.Action("Edit", "Peliculas", new { id = pelicula.IdPelicula })">Editar</a></li>
-                            <li><a class="dropdown-item text-danger" href="@Url.Action("Delete", "Peliculas", new { id = pelicula.IdPelicula })">Eliminar</a></li>
+                            <li><a href="#" class="dropdown-item" onclick="editarPelicula(@pelicula.IdPelicula, '@pelicula.Titulo', '@pelicula.Sinopsis', '@pelicula.ImgPoster', '@pelicula.ImgFondo', '@pelicula.FechaLanzamiento.ToString("yyyy-MM-dd")', @pelicula.DuracionMinutos, '@pelicula.TituloEtiqueta'); return false;">Editar</a></li>
+                            <li><a href="#" class="dropdown-item text-danger" onclick="confirmarEliminacionPelicula(@pelicula.IdPelicula, '@pelicula.Titulo'); return false;">Eliminar</a></li>
                         </ul>
                     </div>
                 </div>
@@ -84,8 +88,8 @@
                                 Gestionar
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/Horarios/Editar/@horario.IdHorario">Editar</a></li>
-                                <li><a class="dropdown-item text-danger" href="/Horarios/Eliminar/@horario.IdHorario" onclick="return confirm('¿Seguro que quieres eliminar este horario?')">Eliminar</a></li>
+                                <li><a asp-action="Edit" asp-controller="HorarioPeliculas" asp-route-id="@horario.IdHorario" class="dropdown-item">Editar</a></li>
+                                <li><a href="#" class="dropdown-item text-danger" onclick="confirmarEliminacionHorario(@horario.IdHorario, '@horario.Pelicula.Titulo'); return false;">Eliminar</a></li>
                             </ul>
                         </div>
                     </div>
@@ -95,8 +99,126 @@
     </div>
 </div>
 
+<!-- Modal Crear Película -->
+<div class="modal fade" id="createPeliculaModal" tabindex="-1" aria-labelledby="createPeliculaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="createPeliculaModalLabel">
+                    <i class="fas fa-film me-2"></i>Añadir Nueva Película
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createPeliculaForm" asp-action="CreatePelicula" asp-controller="Peliculas" method="post">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="createTitulo" class="form-label">Título *</label>
+                                <input type="text" class="form-control" id="createTitulo" name="Titulo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="createTituloEtiqueta" class="form-label">Título Etiqueta</label>
+                                <input type="text" class="form-control" id="createTituloEtiqueta" name="TituloEtiqueta" placeholder="Título corto para mostrar">
+                            </div>
+                            <div class="mb-3">
+                                <label for="createDuracionMinutos" class="form-label">Duración (minutos) *</label>
+                                <input type="number" class="form-control" id="createDuracionMinutos" name="DuracionMinutos" required min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="createFechaLanzamiento" class="form-label">Fecha de Lanzamiento *</label>
+                                <input type="date" class="form-control" id="createFechaLanzamiento" name="FechaLanzamiento" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="createImgPoster" class="form-label">URL Imagen Poster</label>
+                                <input type="url" class="form-control" id="createImgPoster" name="ImgPoster" placeholder="https://...">
+                            </div>
+                            <div class="mb-3">
+                                <label for="createImgFondo" class="form-label">URL Imagen Fondo</label>
+                                <input type="url" class="form-control" id="createImgFondo" name="ImgFondo" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createSinopsis" class="form-label">Sinopsis</label>
+                        <textarea class="form-control" id="createSinopsis" name="Sinopsis" rows="4" placeholder="Describe brevemente la película..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-save me-2"></i>Guardar Película
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Película -->
+<div class="modal fade" id="editPeliculaModal" tabindex="-1" aria-labelledby="editPeliculaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-dark">
+                <h5 class="modal-title" id="editPeliculaModalLabel">
+                    <i class="fas fa-edit me-2"></i>Editar Película
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editPeliculaForm" asp-action="Edit" asp-controller="Peliculas" method="post">
+                <input type="hidden" id="editIdPelicula" name="IdPelicula">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editTitulo" class="form-label">Título *</label>
+                                <input type="text" class="form-control" id="editTitulo" name="Titulo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTituloEtiqueta" class="form-label">Título Etiqueta</label>
+                                <input type="text" class="form-control" id="editTituloEtiqueta" name="TituloEtiqueta" placeholder="Título corto para mostrar">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDuracionMinutos" class="form-label">Duración (minutos) *</label>
+                                <input type="number" class="form-control" id="editDuracionMinutos" name="DuracionMinutos" required min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editFechaLanzamiento" class="form-label">Fecha de Lanzamiento *</label>
+                                <input type="date" class="form-control" id="editFechaLanzamiento" name="FechaLanzamiento" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editImgPoster" class="form-label">URL Imagen Poster</label>
+                                <input type="url" class="form-control" id="editImgPoster" name="ImgPoster" placeholder="https://...">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editImgFondo" class="form-label">URL Imagen Fondo</label>
+                                <input type="url" class="form-control" id="editImgFondo" name="ImgFondo" placeholder="https://...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSinopsis" class="form-label">Sinopsis</label>
+                        <textarea class="form-control" id="editSinopsis" name="Sinopsis" rows="4" placeholder="Describe brevemente la película..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-save me-2"></i>Actualizar Película
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
+        // Funcionalidad original del "Ver más"
         let peliculasMostradas = 5;
         const incremento = 5;
         const total = document.querySelectorAll(".pelicula-card").length;
@@ -113,6 +235,80 @@
             if (peliculasMostradas >= total) {
                 this.style.display = "none";
             }
+        });
+
+        // Función para editar película
+        function editarPelicula(id, titulo, sinopsis, imgPoster, imgFondo, fechaLanzamiento, duracionMinutos, tituloEtiqueta) {
+            document.getElementById('editIdPelicula').value = id;
+            document.getElementById('editTitulo').value = titulo || '';
+            document.getElementById('editTituloEtiqueta').value = tituloEtiqueta || '';
+            document.getElementById('editSinopsis').value = sinopsis || '';
+            document.getElementById('editImgPoster').value = imgPoster || '';
+            document.getElementById('editImgFondo').value = imgFondo || '';
+            document.getElementById('editDuracionMinutos').value = duracionMinutos || '';
+            document.getElementById('editFechaLanzamiento').value = fechaLanzamiento || '';
+
+            var editModal = new bootstrap.Modal(document.getElementById('editPeliculaModal'));
+            editModal.show();
+        }
+
+        // Función para confirmar eliminación de película
+        function confirmarEliminacionPelicula(id, titulo) {
+            swal({
+                title: "¿Estás seguro?",
+                text: `¿Quieres eliminar la película "${titulo}"? Esta acción no se puede deshacer.`,
+                icon: "warning",
+                buttons: {
+                    cancel: {
+                        text: "Cancelar",
+                        visible: true,
+                        className: "btn btn-secondary"
+                    },
+                    confirm: {
+                        text: "Sí, eliminar",
+                        className: "btn btn-danger"
+                    }
+                },
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    // Usar window.location para navegar a la acción del controller
+                    window.location.href = '@Url.Action("DeletePelicula", "Peliculas")' + '/' + id;
+                }
+            });
+        }
+
+        // Función para confirmar eliminación de horario
+        function confirmarEliminacionHorario(id, peliculaTitulo) {
+            swal({
+                title: "¿Estás seguro?",
+                text: `¿Quieres eliminar este horario de "${peliculaTitulo}"? Esta acción no se puede deshacer.`,
+                icon: "warning",
+                buttons: {
+                    cancel: {
+                        text: "Cancelar",
+                        visible: true,
+                        className: "btn btn-secondary"
+                    },
+                    confirm: {
+                        text: "Sí, eliminar",
+                        className: "btn btn-danger"
+                    }
+                },
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    // Usar window.location para navegar a la acción del controller
+                    window.location.href = '@Url.Action("Delete", "HorarioPeliculas")' + '/' + id;
+                }
+            });
+        }
+
+        // Limpiar formulario al cerrar modal de crear
+        document.getElementById('createPeliculaModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('createPeliculaForm').reset();
         });
     </script>
 }

@@ -49,5 +49,25 @@ namespace MvcBeeyondScreenClient.Controllers
 
             return View(model);
         }
+
+        //Edit peli
+        public async Task<IActionResult> UpdatePelicula(Pelicula peli)
+        {
+            await this.service.UpdatePeliculaAsync(peli);
+            return RedirectToAction("IndexAdmin");
+        }
+
+        //Delete peli
+        public async Task<IActionResult> DeletePelicula(int idPelicula)
+        {
+            await this.service.DeletePeliculaAsync(idPelicula);
+            return RedirectToAction("IndexAdmin");
+        }
+        //Create peli
+        public async Task<IActionResult> CreatePelicula(Pelicula peli)
+        {
+            await this.service.InsertPeliculaAsync(peli);
+            return RedirectToAction("IndexAdmin");
+        }
     }
 }
