@@ -60,6 +60,7 @@ namespace MvcBeeyondScreenClient.Controllers
                     new Claim("Imagen", usuario.Imagen);
                 identity.AddClaim(claimImagen);
 
+
                 ClaimsPrincipal userPrincipal =
                     new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(
