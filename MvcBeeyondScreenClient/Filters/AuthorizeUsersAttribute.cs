@@ -12,6 +12,8 @@ namespace MvcBeeyondScreenClient.Filters
             //POR AHORA, SOLAMENTE NOS VA A INTERESAR SI 
             //EXISTE EL EMPLEADO
             var user = context.HttpContext.User;
+
+
             if (user.Identity.IsAuthenticated == false)
             {
                 context.Result = this.GetRoute("Managed", "Login");
