@@ -15,9 +15,9 @@ namespace MvcBeeyondScreenClient.Controllers
         }
         [AuthorizeUsers]
         public async Task<IActionResult> AsientosReserva
-            (int idHorario)
+            (int id)
         {
-            ModelAsientosReserva model = await this.service.ReservaAsientoSalaHorarioIdAsync(idHorario);
+            ModelAsientosReserva model = await this.service.ReservaAsientoSalaHorarioIdAsync(id);
             return View(model);
         }
         [AuthorizeUsers]

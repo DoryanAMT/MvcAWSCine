@@ -41,7 +41,7 @@
                         </div>
 
                         <div class="mt-4">
-                            <a href="/Tickets/Comprar/@Model.Pelicula.IdPelicula" class="btn btn-danger btn-lg">
+                            <a href="#horariosDisponibles" class="btn btn-danger btn-lg">
                                 <i class="bi bi-ticket-perforated me-2"></i>Comprar Tickets
                             </a>
                         </div>
@@ -53,7 +53,7 @@
     <!-- Sección de Horarios -->
     @if (Model.HorarioPelicula != null)
     {
-        <div class="container mt-5">
+        <div class="container mt-5" id="horariosDisponibles">
             <div class="row">
                 <div class="col-12">
                     <div class="card shadow-sm border-0">
@@ -76,8 +76,8 @@
                                         {
                                             string fechaId = grupo.Key.ToString("yyyy-MM-dd");
                                             string fechaFormateada = grupo.Key.ToString("dddd, dd MMMM");
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link @(esActivo ? "active" : "")"
+                                            <li class="nav-item border-black border-1" role="presentation">
+                                                <button class="nav-link @(esActivo ? "active text-black" : "text-black")"
                                                         id="@fechaId-tab"
                                                         data-bs-toggle="tab"
                                                         data-bs-target="#@fechaId"
@@ -125,7 +125,7 @@
                                                                         {
                                                                             <a asp-controller="Asientos"
                                                                                asp-action="AsientosReserva"
-                                                                               asp-route-idHorario="@horario.IdHorario"
+                                                                               asp-route-id="@horario.IdHorario"
                                                                                class="btn btn-danger w-100">
                                                                                 <i class="bi bi-ticket-perforated me-1"></i>Seleccionar
                                                                             </a>
@@ -162,6 +162,21 @@
 
 @section Scripts {
     <script src="~/js/peliculas/detailsScript.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        });
+    </script>
 }
 
 @section Styles {

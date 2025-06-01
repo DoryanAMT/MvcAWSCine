@@ -3,18 +3,16 @@ using MvcBeeyondScreenClient.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<ServiceCine>();
 
+
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
-builder.Services.AddDistributedMemoryCache();
 builder.Services.AddAuthentication(
     options =>
     {
@@ -25,8 +23,13 @@ builder.Services.AddAuthentication(
         options.DefaultChallengeScheme =
         CookieAuthenticationDefaults.AuthenticationScheme;
     }).AddCookie();
+
+
+// Add services to the container.
 builder.Services
-    .AddControllersWithViews(options => options.EnableEndpointRouting = false);
+    .AddControllersWithViews
+    (options => options.EnableEndpointRouting = false)
+    .AddSessionStateTempDataProvider();
 
 var app = builder.Build();
 
@@ -38,13 +41,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseStaticFiles();
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 //app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 //app.MapStaticAssets();
 
@@ -53,7 +56,7 @@ app.UseSession();
 app.UseMvc(routes =>
 {
     routes.MapRoute(
-      name: "Default",
+      name: "default",
       template: "{controller=Peliculas}/{action=Index}/{id?}"
     );
 });

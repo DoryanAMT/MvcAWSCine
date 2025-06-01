@@ -1,57 +1,486 @@
-﻿@model IEnumerable<Usuario>
+﻿@model List<Usuario>
 
-<h2>Usuarios</h2>
+@{
+    ViewData["Title"] = "Panel de Administración - Usuarios";
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var u in Model)
-        {
-            <tr>
-                <td>@u.Nombre</td>
-                <td>@u.Email</td>
-                <td>
-                    <button class="btn btn-info btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalUsuario"
-                            onclick="cargarModal('@Url.Action("Details", new { id = u.IdUsuario })')">
-                        Ver Detalles
-                    </button>
-                </td>
-            </tr>
+
+@section Styles {
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #3a3a3a 0%, #ff0a0a 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-    </tbody>
-</table>
 
-<!-- Modal -->
-<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Detalles del Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        .user-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+            .user-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 3px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .user-card:hover .user-avatar {
+            border-color: #667eea;
+        }
+
+        .btn-details {
+            background: linear-gradient(45deg, #e50914, #141414);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+            .btn-details:hover {
+                background: linear-gradient(45deg, #e50914, #141414);
+                transform: scale(1.05);
+                color: white;
+            }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+            .btn-delete:hover {
+                background: linear-gradient(45deg, #ff5252, #e53935);
+                transform: scale(1.05);
+                color: white;
+            }
+
+        .modal-header {
+            background: linear-gradient(135deg, #e50914 0%, #141414 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+            .modal-header .btn-close {
+                filter: invert(1);
+            }
+
+        .detail-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .detail-item:last-child {
+                border-bottom: none;
+            }
+
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: #6c757d;
+            word-break: break-all;
+        }
+
+        .alert-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: white;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #3a3a3a 0%, #1e1e1e 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            background: rgba(255,255,255,0.9);
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+            .search-box:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+                background: white;
+            }
+
+        .page-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #e50914 0%, #141414 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f8f9ff;
+                transform: scale(1.01);
+            }
+    </style>
+}
+
+<div class="admin-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title mb-2">
+                    <i class="fas fa-users me-3"></i>Panel de Administración
+                </h1>
+                <p class="mb-0 fs-5">Gestión completa de usuarios del sistema</p>
             </div>
-            <div class="modal-body" id="modalContent">
-                <!-- Aquí se carga el contenido -->
+            <div class="col-md-4 text-end">
+                <div class="stats-card">
+                    <h3 class="mb-1">@Model.Count</h3>
+                    <p class="mb-0">Usuarios Registrados</p>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        function cargarModal(url) {
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById("modalContent").innerHTML = html;
-                });
+<div class="container fade-in">
+    <!-- Barra de búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control search-box"
+                       placeholder="Buscar usuarios por nombre o email...">
+                <span class="input-group-text bg-transparent border-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">
+                        <i class="fas fa-image me-2"></i>Avatar
+                    </th>
+                    <th scope="col">
+                        <i class="fas fa-user me-2"></i>Nombre
+                    </th>
+                    <th scope="col">
+                        <i class="fas fa-envelope me-2"></i>Email
+                    </th>
+                    <th scope="col">
+                        <i class="fas fa-calendar me-2"></i>Fecha Registro
+                    </th>
+                    <th scope="col" class="text-center">
+                        <i class="fas fa-cogs me-2"></i>Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="usersTableBody">
+                @foreach (var usuario in Model)
+                {
+                    <tr class="user-row" data-name="@usuario.Nombre" data-email="@usuario.Email">
+                        <td>
+                            <img src="@usuario.Imagen" alt="Avatar" class="user-avatar rounded-circle">
+                        </td>
+                        <td class="align-middle">
+                            <div class="fw-bold text-primary">@usuario.Nombre</div>
+                            <small class="text-muted">ID: @usuario.IdUsuario</small>
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge bg-light text-dark fs-6">@usuario.Email</span>
+                        </td>
+                        <td class="align-middle">
+                            <div>@DateTime.Parse(usuario.FechaCreacion.ToString()).ToString("dd/MM/yyyy")</div>
+                            <small class="text-muted">@DateTime.Parse(usuario.FechaCreacion.ToString()).ToString("HH:mm")</small>
+                        </td>
+                        <td class="align-middle text-center">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-details btn-sm me-2"
+                                        onclick="showUserDetails(@usuario.IdUsuario, '@usuario.Nombre', '@usuario.Email', '@usuario.Imagen', '@usuario.FechaCreacion')">
+                                    <i class="fas fa-eye me-1"></i>Ver
+                                </button>
+                                <button type="button" class="btn btn-delete btn-sm"
+                                        onclick="confirmDelete(@usuario.IdUsuario, '@usuario.Nombre')">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de Detalles -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userDetailsModalLabel">
+                    <i class="fas fa-user-circle me-2"></i>Detalles del Usuario
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4">
+                        <img id="modalUserImage" src="" alt="Avatar del usuario"
+                             class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid #667eea;">
+                        <h4 id="modalUserName" class="text-primary"></h4>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="detail-item">
+                            <div class="detail-label">ID de Usuario</div>
+                            <div class="detail-value" id="modalUserId"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Nombre Completo</div>
+                            <div class="detail-value" id="modalUserFullName"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Correo Electrónico</div>
+                            <div class="detail-value" id="modalUserEmail"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Fecha de Registro</div>
+                            <div class="detail-value" id="modalUserDate"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Estado de la Cuenta</div>
+                            <div class="detail-value">
+                                <span class="badge bg-success fs-6">
+                                    <i class="fas fa-check-circle me-1"></i>Activa
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                    <i class="fas fa-exclamation-triangle me-3 fs-4"></i>
+                    <div>
+                        <strong>¡Advertencia!</strong> Esta acción no se puede deshacer.
+                    </div>
+                </div>
+                <p class="mb-2">¿Estás seguro de que deseas eliminar al usuario:</p>
+                <p class="fw-bold text-danger fs-5 mb-3" id="deleteUserName"></p>
+                <p class="text-muted small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Al eliminar este usuario se perderán todos sus datos asociados permanentemente.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash me-1"></i>Eliminar Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let userToDelete = null;
+
+    // Función para mostrar detalles del usuario
+    function showUserDetails(id, nombre, email, imagen, fechaCreacion) {
+        document.getElementById('modalUserId').textContent = id;
+        document.getElementById('modalUserName').textContent = nombre;
+        document.getElementById('modalUserFullName').textContent = nombre;
+        document.getElementById('modalUserEmail').textContent = email;
+        document.getElementById('modalUserImage').src = imagen;
+
+        // Formatear fecha
+        const fecha = new Date(fechaCreacion);
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('modalUserDate').textContent = fechaFormateada;
+
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('userDetailsModal'));
+        modal.show();
+    }
+
+    // Función para confirmar eliminación
+    function confirmDelete(id, nombre) {
+        userToDelete = id;
+        document.getElementById('deleteUserName').textContent = nombre;
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+    }
+
+    // Manejar confirmación de eliminación
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (userToDelete) {
+            // Aquí iría la lógica para eliminar el usuario
+            // Por ejemplo: hacer una petición AJAX al servidor
+
+            // Simulación de eliminación (remover de la tabla)
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const userId = row.querySelector('button[onclick*="' + userToDelete + '"]');
+                if (userId) {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(-100%)';
+                    setTimeout(() => row.remove(), 500);
+                }
+            });
+
+            // Cerrar modal
+            bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
+
+            // Mostrar mensaje de éxito
+            showToast('Usuario eliminado correctamente', 'success');
+
+            userToDelete = null;
         }
-    </script>
-}
+    });
+
+    // Función de búsqueda
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.user-row');
+
+        rows.forEach(row => {
+            const name = row.getAttribute('data-name').toLowerCase();
+            const email = row.getAttribute('data-email').toLowerCase();
+
+            if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                row.style.display = '';
+                row.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Función para mostrar toast de notificación
+    function showToast(message, type) {
+        // Crear elemento toast
+        const toastHtml = `
+            <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-check-circle me-2"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+
+        // Agregar al DOM
+        let toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            document.body.appendChild(toastContainer);
+        }
+
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+        // Mostrar toast
+        const toastElement = toastContainer.lastElementChild;
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+
+        // Remover del DOM después de que se oculte
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+    }
+
+    // Manejar errores de imágenes
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('error', function() {
+                this.src = 'https://via.placeholder.com/60/667eea/ffffff?text=?';
+            });
+        });
+    });
+</script>

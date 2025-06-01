@@ -1,102 +1,91 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BeeyondScreen</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BeeyondScreen.styles.css" asp-append-version="true" />
-    <!-- Font Awesome para iconos -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Calendario -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css" rel="stylesheet">
-    @await RenderSectionAsync("Styles", required: false)
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark box-shadow">
-            <div class="container">
-                <a class="navbar-brand me-5" asp-area="" asp-controller="Peliculas" asp-action="Index">
-                    <i class="fas fa-film me-2"></i>BeeyondScreen
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 gap-3">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Peliculas" asp-action="Index">
-                                <i class="fas fa-video me-2"></i>Películas
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Peliculas" asp-action="IndexAdmin">
-                                <i class="fas fa-clock me-2"></i>Horarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            @* <a class="nav-link" asp-area="" asp-controller="Usuarios" asp-action="Index"> *@
-                            <a class="nav-link" asp-area="" asp-controller="Usuarios" asp-action="Index">
-                                <i class="fas fa-users me-1"></i>Usuarios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Peliculas" asp-action="Index">
-                                <i class="fas fa-ticket-alt me-2"></i>Boletos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Peliculas" asp-action="Index">
-                                <i class="fa-solid fa-chair me-2"></i>Asientos
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="d-flex">
-                        <partial name="_MenuUsuario" />
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <main role="main" class="pb-3 fade-in">
-        @RenderBody()
-    </main>
-    <footer class="footer py-4 bg-dark text-white">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mb-3 mb-md-0">
-                    <h5>BeeyondScreen</h5>
-                    <p class="text-muted">Tu experiencia de cine va más allá de la pantalla.</p>
-                    <p class="mb-0 text-muted">&copy; 2025 - BeeyondScreen - <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-muted">Privacy</a></p>
-                </div>
-                <div class="col-md-3 mb-3 mb-md-0">
-                    <h5>Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-muted">Términos y Condiciones</a></li>
-                        <li><a href="#" class="text-muted">FAQ</a></li>
-                        <li><a href="#" class="text-muted">Contacto</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5>Síguenos</h5>
-                    <div class="social-links">
-                        <a href="#" class="me-2 text-muted"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="me-2 text-muted"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="me-2 text-muted"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-muted"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+﻿<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+   <meta charset="utf-8" />  
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+   <title>@ViewData["Title"] - BeeyondScreen</title>  
+   <script type="importmap"></script>  
+   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />  
+   <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />  
+   <link rel="stylesheet" href="~/BeeyondScreen.styles.css" asp-append-version="true" />  
+   <!-- Font Awesome para iconos -->  
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />  
+   <!-- Google Fonts -->  
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">  
+   <!-- Calendario -->  
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css" rel="stylesheet">  
+   @await RenderSectionAsync("Styles", required: false)  
+</head>  
+<body>  
+   <header>  
+       <nav class="navbar navbar-expand-sm navbar-dark box-shadow p-3" style="background-color: black">
+           <div class="container">  
+               <a class="navbar-brand me-5" asp-area="" asp-controller="Peliculas" asp-action="Index">  
+                   <i class="fas fa-film me-2"></i>BEEYONDSCREEN
+               </a>  
+               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"  
+                       aria-expanded="false" aria-label="Toggle navigation">  
+                   <span class="navbar-toggler-icon"></span>  
+               </button>  
+               <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">  
+                   <ul class="navbar-nav flex-grow-1 gap-3">  
+                       <li class="nav-item">  
+                           <a class="nav-link" asp-area="" asp-controller="Peliculas" asp-action="Index">  
+                               <i class="fas fa-video me-2"></i>PELICULAS  
+                           </a>  
+                       </li>  
+                       <partial name="_MenuAdmin" />  
+                   </ul>  
+                   <div class="d-flex">  
+                       <partial name="_MenuUsuario" />  
+                   </div>  
+               </div>  
+           </div>  
+       </nav>  
+   </header>  
+   <main role="main" class="pb-3 fade-in">  
+       @if (ViewContext.RouteData.Values["controller"]?.ToString() != "Peliculas" || ViewContext.RouteData.Values["action"]?.ToString() != "Index")  
+       {  
+           <div class="container mt-3">  
+               @RenderBody()  
+           </div>  
+       }  
+       else  
+       {  
+           @RenderBody()  
+       }  
+   </main>  
+   <footer class="footer py-4 bg-dark text-white">  
+       <div class="container">  
+           <div class="row">  
+               <div class="col-md-6 mb-3 mb-md-0">  
+                   <h5>BeeyondScreen</h5>  
+                   <p class="text-white">Tu experiencia de cine va más allá de la pantalla.</p>  
+                   <p class="mb-0 text-white">&copy; 2025 - BeeyondScreen - <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-white">Privacy</a></p>  
+               </div>  
+               <div class="col-md-3 mb-3 mb-md-0">  
+                   <h5>Enlaces Rápidos</h5>  
+                   <ul class="list-unstyled">  
+                       <li><a href="#" class="text-white">Términos y Condiciones</a></li>  
+                       <li><a href="#" class="text-white">FAQ</a></li>  
+                       <li><a href="#" class="text-white">Contacto</a></li>  
+                   </ul>  
+               </div>  
+               <div class="col-md-3">  
+                   <h5>Síguenos</h5>  
+                   <div class="social-links">  
+                       <a href="#" class="me-2 text-white"><i class="fab fa-facebook-f"></i></a>  
+                       <a href="#" class="me-2 text-white"><i class="fab fa-twitter"></i></a>  
+                       <a href="#" class="me-2 text-white"><i class="fab fa-instagram"></i></a>  
+                       <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>  
+                   </div>  
+               </div>  
+           </div>  
+       </div>  
+   </footer>  
+   <script src="~/lib/jquery/dist/jquery.min.js"></script>  
+   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>  
+   <script src="~/js/site.js" asp-append-version="true"></script>  
+   @await RenderSectionAsync("Scripts", required: false)  
+</body>  
 </html>

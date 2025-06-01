@@ -14,6 +14,7 @@ namespace MvcBeeyondScreenClient.Controllers
         {
             this.service = service;
         }
+        [AuthorizeUsers]
         public async Task<IActionResult> Index()
         {
             List<Usuario> usuarios = await this.service.GetUsuariosAsync();

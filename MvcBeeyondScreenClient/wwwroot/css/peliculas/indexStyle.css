@@ -1,4 +1,16 @@
-﻿:root {
+﻿@font-face {
+    font-family: 'MachineStd';
+    src: url('/fonts/MachineStd.B4BONvne.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-gray);
+}
+
+:root {
     --primary-color: #dc3545;
     --secondary-color: #6c757d;
     --dark-bg: #2c2c2c;
@@ -10,11 +22,6 @@ html {
     scroll-behavior: smooth;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--light-gray);
-}
-
 .hero-section {
     min-height: 100vh;
     height: 100vh;
@@ -22,18 +29,18 @@ body {
     align-items: center;
     justify-content: center;
     color: var(--light-gray);
+    font-family: 'MachineStd', sans-serif;
     text-align: center;
     position: relative;
     z-index: 1;
 }
 
-.hero-section h1 {
-    font-size: 5rem;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-weight: 900;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-}
+    .hero-section h1 {
+        font-size: 5rem;
+        font-weight: 900;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
+    }
 
 .hero-section p {
     font-size: 3.2rem;
@@ -164,7 +171,8 @@ body {
 }
 
 .movie-title {
-    font-size: 1.1rem;
+    font-family: 'MachineStd', sans-serif;
+    font-size: 2.3rem;
     font-weight: bold;
     margin-bottom: 5px;
     color: #333;

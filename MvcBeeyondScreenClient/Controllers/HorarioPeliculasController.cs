@@ -41,14 +41,14 @@ namespace MvcBeeyondScreenClient.Controllers
             await this.service.InserHorarioPeliculaAsync(1, horarioPelicula.IdPelicula,
                 horarioPelicula.IdSala, horarioPelicula.IdVersion, horarioPelicula.HoraFuncion,
                 horarioPelicula.AsientosDisponibles, horarioPelicula.Estado);
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexAdmin", "Peliculas");
         }
         [AuthorizeUsers]
         public async Task<IActionResult> Delete
             (int idHorarioPelicula)
         {
             await this.service.DeleteHorarioPeliculaAsync(idHorarioPelicula);
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexAdmin", "Peliculas");
         }
 
     }
