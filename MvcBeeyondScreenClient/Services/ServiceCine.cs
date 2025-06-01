@@ -56,37 +56,27 @@ namespace MvcBeeyondScreenClient.Services
         }
 
         // Insertar una película
-        public async Task<bool> InsertPeliculaAsync(Pelicula pelicula)
+        public async Task InsertPeliculaAsync(Pelicula pelicula)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(this.ApiUrl);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(this.header);
+            string request = "/api/Peliculas";
+            string token = this.contextAccessor.HttpContext.User.FindFirst("TOKEN")?.Value;
 
-                string json = JsonConvert.SerializeObject(pelicula);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            string json = JsonConvert.SerializeObject(pelicula);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PostAsync("api/peliculas", content);
-                return response.IsSuccessStatusCode;
-            }
+            await this.PostApiAsync<Pelicula>(request, token, content);
         }
 
         // Actualizar una película
-        public async Task<bool> UpdatePeliculaAsync(Pelicula pelicula)
+        public async Task UpdatePeliculaAsync(Pelicula pelicula)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(this.ApiUrl);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(this.header);
+            string request = "api/Peliculas";
+            string token = this.contextAccessor.HttpContext.User.FindFirst("TOKEN")?.Value;
 
-                string json = JsonConvert.SerializeObject(pelicula);
-                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            string json = JsonConvert.SerializeObject(pelicula);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = await client.PutAsync($"api/peliculas", content);
-                return response.IsSuccessStatusCode;
-            }
+           await this.CallApiAsync<Pelicula>(request, token, content);
         }
 
         // Eliminar una película

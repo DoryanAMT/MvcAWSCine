@@ -25,7 +25,7 @@
         @for (int i = 0; i < Model.Peliculas.Count; i++)
         {
             var pelicula = Model.Peliculas[i];
-            <div class="card shadow-sm pelicula-card" style="width: 180px; display: @(i < 5 ? "block" : "none")">
+            <div class="card shadow-sm pelicula-card" style="width: 180px; display: @(i < 6 ? "block" : "none")">
                 <img src="@pelicula.ImgPoster" class="card-img-top" alt="@pelicula.Titulo" style="height: 250px; object-fit: cover;">
                 <div class="card-body p-2">
                     <h6 class="card-title text-truncate">@pelicula.Titulo</h6>
@@ -72,7 +72,7 @@
                  data-sala="@horario.Sala"
                  data-estado="@horario.Estado">
                 <div class="card d-flex flex-row shadow-sm h-100">
-                    <img src="@horario.Pelicula.ImgFondo" alt="@horario.Pelicula.Titulo"
+                    <img src="@horario.Pelicula.ImgPoster" class="h-100 object-fit-cover" alt="@horario.Pelicula.Titulo"
                          style="width: 150px; height: 150px; object-fit: cover; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" />
                     <div class="p-3 d-flex flex-column justify-content-between flex-grow-1">
                         <div>
@@ -89,7 +89,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a asp-action="Edit" asp-controller="HorarioPeliculas" asp-route-id="@horario.IdHorario" class="dropdown-item">Editar</a></li>
-                                <li><a href="#" class="dropdown-item text-danger" onclick="confirmarEliminacionHorario(@horario.IdHorario, '@horario.Pelicula.Titulo'); return false;">Eliminar</a></li>
+                                <li><a asp-action="Delete" asp-controller="HorarioPeliculas" asp-route-idHorarioPelicula="@horario.IdHorario" class="dropdown-item text-danger" onclick="confirmarEliminacionHorario(@horario.IdHorario, '@horario.Pelicula.Titulo')">Eliminar</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editPeliculaForm" asp-action="Edit" asp-controller="Peliculas" method="post">
+            <form id="editPeliculaForm" asp-action="UpdatePelicula" asp-controller="Peliculas" method="post">
                 <input type="hidden" id="editIdPelicula" name="IdPelicula">
                 <div class="modal-body">
                     <div class="row">
@@ -219,8 +219,8 @@
 @section Scripts {
     <script>
         // Funcionalidad original del "Ver más"
-        let peliculasMostradas = 5;
-        const incremento = 5;
+        let peliculasMostradas = 6;
+        const incremento = 6;
         const total = document.querySelectorAll(".pelicula-card").length;
 
         document.getElementById("btnVerMas")?.addEventListener("click", function () {

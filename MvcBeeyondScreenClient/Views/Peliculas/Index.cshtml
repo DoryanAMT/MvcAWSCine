@@ -31,7 +31,7 @@
                 <div class="col-md-8">
                     <h2>PELÍCULAS</h2>
                     <div class="filter-tabs">
-                        <a href="#" class="filter-tab active">ESTRENOS</a>
+                        <a href="#" class="filter-tab active">TODAS</a>
                         <a href="#" class="filter-tab">HOY</a>
                         <a href="#" class="filter-tab">MAÑANA</a>
                         <a href="#" class="filter-tab">PRÓXIMOS</a>
@@ -84,9 +84,9 @@
                                                 @foreach (var horario in horariosLimitados)
                                                 {
                                                     DateTime horaFuncion = DateTime.Parse(horario.HoraFuncion.ToString());
-                                                    <div class="schedule-slot">
+                                                    <a asp-controller="Asientos" asp-action="AsientosReserva" asp-route-id="@horario.IdHorario" class="schedule-slot text-decoration-none">
                                                         @horaFuncion.ToString("HH:mm")
-                                                    </div>
+                                                    </a>
                                                 }
                                             </div>
                                         }
@@ -153,7 +153,7 @@
                     // Espera a que termine el scroll y ajusta para dejar visible la navbar
                     setTimeout(() => {
                         // Cambia 70 por la altura real de tu navbar si es diferente
-                        window.scrollBy({ top: -102, left: 0, behavior: 'instant' });
+                        window.scrollBy({ top: -150, left: 0, behavior: 'instant' });
                     }, 500);
                 }
             }
