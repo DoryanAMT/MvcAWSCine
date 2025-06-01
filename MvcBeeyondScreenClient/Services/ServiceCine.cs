@@ -51,7 +51,7 @@ namespace MvcBeeyondScreenClient.Services
         // Obtener todas las películas con sus horarios
         public async Task<List<ModelDetailsPelicula>> GetPeliculasConHorariosAsync()
         {
-            string request = "/api/Peliculas/GetPeliculasConHorarios";
+            string request = "api/Peliculas/GetPeliculasConHorarios";
             return await this.CallApiAsync<List<ModelDetailsPelicula>>(request);
         }
 
